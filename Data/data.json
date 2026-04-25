@@ -1,0 +1,69 @@
+{
+  "social": [
+    { "name": "Facebook", "icon": "fa-brands fa-facebook", "link": "https://www.facebook.com/guitaristVN/" },
+    { "name": "TikTok", "icon": "fa-brands fa-tiktok", "link": "https://www.tiktok.com/@jblufe.studio" },
+    { "name": "YouTube", "icon": "fa-brands fa-youtube", "link": "https://www.youtube.com/@lufeaudio1526" },
+    { "name": "Instagram", "icon": "fa-brands fa-instagram", "link": "https://www.instagram.com/jb_lufe.audio/" }
+  ],
+  "donate": {
+    "bankName": "Techcombank",
+    "bankOwner": "NGUYỄN THANH LỊCH",
+    "bankNumber": "19031366021012"
+  },
+  "tools": [
+    {
+      "title": "Tra cứu hợp âm ",
+      "desc": "Hợp âm kết hợp metronome, phù hợp để tập nhịp khi đệm hát.",
+      "status": "Đã có sẵn",
+      "link": "/index.html"
+    },
+    {
+      "title": "Luyện nghe nốt nhạc",
+      "desc": "Bài tập nhận diện nốt nhạc.",
+      "status": "Đã có sẵn",
+      "link": "/Tools/index.html"
+    },
+    {
+      "title": "Metronome",
+      "desc": "Tổng hợp bài học + checklist + bài tập thực hành.",
+      "status": "Đã có sẵn",
+      "link": "/Tools/index.html"
+    }
+  ],
+  "albums": [
+    {
+      "type": "album",
+      "title": "Ước mơ tuổi 17 ",
+      "desc": "Release 09/2025. Jb-Lufe",
+      "chip": "Single",
+      "link": "https://youtu.be/FgIijOdivPk?si=pOOiFNZazCiZJPTw",
+      "cover":"/IMG/album2.jpg"
+    },
+    {
+      "type": "album",
+      "title": "Đã đủ rồi",
+      "desc": "Release 03/2025. Jb-Lufe feat. Fei Nguyen",
+      "chip": "Single",
+      "link": "https://youtu.be/m95H8jcECBw?si=gx1znzB-0ylaavEC",
+      "cover":"/IMG/album1.jpg"
+    },
+    {
+      "type": "album",
+      "title": "Tương tư",
+      "desc": "Release 03/2026. Jb-Lufe feat. Fei Nguyen, Quynh Trang",
+      "chip": "Single",
+      "link": "#",
+      "cover":"/IMG/album3.jpg"
+    }
+  ],
+  "products": [
+    { "title": "Guitar Pick Set", "desc": "Mock sản phẩm affiliate sau này.", "chip": "Affiliate", "link": "#" },
+    { "title": "Audio Interface", "desc": "Mock sản phẩm affiliate sau này.", "chip": "Gear", "link": "#" },
+    { "title": "Course Bundle", "desc": "Mock khóa học/ebook sau này.", "chip": "Digital", "link": "#" }
+  ],
+  "posts": [
+    { "title": "Passing chord là gì?", "desc": "Giải thích dễ hiểu + ví dụ thực tế.", "chip": "Harmony", "link": "../Blog/index.html?slug=passing-chord-la-gi" },
+    { "title": "Cách đệm hát không bị lạc tone", "desc": "Checklist tai nghe + hợp âm + nhịp.", "chip": "Guitar", "link": "../Blog/index.html?slug=dem-hat-khong-bi-lac-tone" }
+    
+  ]
+}

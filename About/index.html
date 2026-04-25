@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About creator | Lufe Audio</title>
+
+  <link rel="stylesheet" href="../CSS/Home.css" />
+  <link rel="stylesheet" href="../CSS/Main.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/index.html">Lufe Audio</a>
+
+      <nav class="nav">
+        <a href="/index.html">Trang chủ</a>
+        <a href="/Tools/index.html">Tools</a>
+        <!-- <a href="/HTML/Blog/index.html">Bài viết</a> -->
+        <a href="/About/index.html" class="btn btn-small">About creator</a>
+      </nav>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Mở menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <div class="mobile-nav" id="mobileNav">
+      <a href="/index.html">Trang chủ</a>
+      <a href="/Tools/index.html">Tools</a>
+      <!-- <a href="/HTML/Blog/index.html">Bài viết</a> -->
+      <a href="/About/index.html">About creator</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-left">
+          <p class="badge">Music • Guitar • Education</p>
+
+          <h1 class="hero-title">
+            Xin chào, mình là <span class="accent">John Thanh Lịch</span> (Jb Lufe)
+          </h1>
+
+          <p class="hero-subtitle">
+            Mình làm nhạc và xây tool giúp mọi người học nhạc dễ hơn: tra cứu hợp âm + metronome,
+            luyện tai nghe, mixing/master, piano... (đang update dần).
+          </p>
+
+          <div class="hero-cta">
+            <a class="btn" href="/Tools/index.html">Xem tools</a>
+            <a class="btn btn-ghost" href="/Data/songs/Smart-link-page.html">Nghe bài nổi bật</a>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <article class="hero-card">
+            <div class="hero-card-top">
+              <div class="avatar" aria-hidden="true">
+                <img class="profile-img" src="/IMG/Picture1.jpg" alt="John Thanh Lịch" />
+                J
+              </div>
+
+              <div>
+                <div class="hero-card-name">John Thanh Lich • Lufe Audio</div>
+                <p class="hero-card-mini">Creator / Music Producer / Software Engineer</p>
+              </div>
+            </div>
+
+            <div class="stat-grid">
+              <span class="social-label">Kết nối:</span>
+              <div class="social-icons" id="socialIcons"></div>
+            </div>
+
+            <div class="hero-note">
+              <p>
+                Mục tiêu: biến học nhạc thành “Đơn giản hóa + có tool trực quan + có bài tập”
+                thay vì mò mẫm lý thuyết một cách khô khan.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="tools">
+      <div class="container">
+        <div class="section-head">
+          <h2>Tools mình đang cung cấp</h2>
+          <p class="muted">Các công cụ giúp học nhạc dễ hơn</p>
+        </div>
+        <div class="card-grid" id="toolsGrid"></div>
+      </div>
+    </section>
+
+    <section class="section alt" id="albums">
+      <div class="container">
+        <div class="section-head">
+          <h2>Âm nhạc của mình</h2>
+        </div>
+        <div class="card-grid" id="albumsGrid"></div>
+      </div>
+    </section>
+
+    <section class="section alt" id="posts">
+      <div class="container">
+        <div class="section-head">
+          <h2>Bài viết (Blog)</h2>
+        </div>
+        <div class="card-grid" id="postsGrid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="donate">
+      <div class="container">
+        <div class="donate">
+          <div class="donate-left">
+            <h2>Ủng hộ (Donate)</h2>
+            <p class="muted">
+              Nếu tool & bài viết hữu ích, anh em có thể ủng hộ để mình duy trì dự án.
+            </p>
+
+            <div class="donate-box">
+              <div class="donate-row">
+                <span class="donate-label">Ngân hàng:</span>
+                <span class="donate-value" id="bankName">—</span>
+              </div>
+              <div class="donate-row">
+                <span class="donate-label">Chủ tài khoản:</span>
+                <span class="donate-value" id="bankOwner">—</span>
+              </div>
+              <div class="donate-row">
+                <span class="donate-label">Số tài khoản:</span>
+                <span class="donate-value" id="bankNumber">—</span>
+              </div>
+
+              <button class="btn btn-ghost" id="copyBank">Copy thông tin</button>
+              <p class="hint" id="copyHint"></p>
+            </div>
+          </div>
+
+          <div class="donate-right">
+            <div class="qr-mock">
+              <p class="qr-title">QR ngân hàng</p>
+              <img
+                class="qr-img"
+                src="/IMG/QR.png"
+                alt="QR chuyển khoản ngân hàng"
+                loading="lazy"
+              />
+              <p class="muted small">Quét QR để chuyển khoản nhanh.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <button id="scrollTopBtn" class="scrollTopBtn" aria-label="Lên đầu trang">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© Copyright by Lufe Audio</p>
+      <div class="footer-links">
+        <a href="https://www.facebook.com/guitaristVN/" aria-label="Facebook">
+          <i class="fa fa1 fa-brands fa-facebook"></i>
+        </a>
+        <a href="https://www.tiktok.com/@jblufe.studio" aria-label="TikTok">
+          <i class="fa fa2 fa-brands fa-tiktok"></i>
+        </a>
+        <a href="https://www.instagram.com/jb_lufe.audio/" aria-label="Instagram">
+          <i class="fa fa3 fa-brands fa-instagram"></i>
+        </a>
+        <a href="https://www.youtube.com/@lufeaudio1526" aria-label="YouTube">
+          <i class="fa fa4 fa-brands fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../JS/utils.js"></script>
+  <script src="../JS/common.js"></script>
+  <script src="../JS/main.js"></script>
+</body>
+</html>

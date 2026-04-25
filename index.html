@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lufe Audio | Hợp âm, metronome và tools học nhạc</title>
+
+  <link rel="stylesheet" href="./CSS/Main.css" />
+  <link rel="stylesheet" href="./CSS/community.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/index.html">Lufe Audio</a>
+      <nav class="nav">
+        <a href="/index.html" class="btn btn-small">Trang chủ</a>
+        <a href="/Tools/index.html">Tools</a>
+        <a href="/About/index.html">About creator</a>
+        <!-- <a href="/HTML/contact/index.html">Liên hệ</a> -->
+      </nav>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Mở menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <div class="mobile-nav" id="mobileNav">
+      <a href="/index.html">Trang chủ</a>
+      <a href="/Tools/index.html">Tools</a>
+      <a href="/About/index.html">About creator</a>
+      <!-- <a href="/HTML/contact/index.html">Liên hệ</a> -->
+    </div>
+  </header>
+
+  <main class="community-page">
+    <section class="community-hero">
+      <div class="container community-hero-grid">
+        <div class="community-hero-left">
+          <p class="community-kicker">Music learning platform</p>
+          <h1>Tìm hợp âm, luyện nhịp, học nhạc dễ hơn</h1>
+          <p class="community-lead">
+            Một nơi để tra cứu hợp âm, mở bài hát nhanh, luyện tập với metronome
+            và tiếp cận kiến thức âm nhạc theo hướng thực dụng.
+          </p>
+
+          <div class="community-search-wrap" id="songSearch">
+            <div class="community-search">
+              <input
+                id="songSearchInput"
+                type="text"
+                placeholder="Nhập tên bài hát hoặc ca sĩ..."
+                aria-label="Tìm bài hát"
+              />
+              <button id="btnSearch" type="button">Tìm ngay</button>
+            </div>
+            <p class="search-note muted">Gõ tên bài hát, ca sĩ hoặc từ khóa để lọc danh sách ngay tại trang chủ.</p>
+          </div>
+
+          <div class="hero-links">
+            <a class="hero-link" href="/Tools/index.html">Mở metronome</a>
+            <a class="hero-link" href="#short-lessons">Xem bài viết</a>
+            <a class="hero-link" href="#song-rank">Xem top bài hát</a>
+          </div>
+        </div>
+
+        <aside class="community-hero-right">
+          <div class="community-panel">
+            <div class="panel-head">
+              <h2 style="color: rgb(105, 103, 103);">Danh sách bài hát</h2>
+              <span class="muted small" id="songCount">0 bài</span>
+            </div>
+
+            <div id="songsList" class="songs-list"></div>
+          </div>
+        </div>
+          <!-- <div class="community-panel quick-panel">
+            <div class="panel-head">
+              <h2>Truy cập nhanh</h2>
+              <span class="muted small">Quick access</span>
+            </div>
+
+            <div class="quick-links">
+              <a class="quick-card" href="/HTML/tools/index.html">
+                <div class="quick-card-top">
+                  <span class="quick-title">Metronome</span>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <p>Luyện nhịp với BPM và time signature tùy chỉnh.</p>
+              </a>
+
+              <a class="quick-card" href="/HTML/blog/index.html">
+                <div class="quick-card-top">
+                  <span class="quick-title">Bài viết</span>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <p>Kiến thức ngắn gọn, dễ áp dụng và tập trung vào thực hành.</p>
+              </a>
+
+              <a class="quick-card" href="/HTML/about/index.html">
+                <div class="quick-card-top">
+                  <span class="quick-title">About creator</span>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <p>Tìm hiểu thêm về người xây dựng dự án và các sản phẩm âm nhạc.</p>
+              </a>
+            </div>
+          </div> -->
+        </aside>
+      </div>
+    </section>
+
+    <section class="community-strip" id="song-rank">
+      <div class="container">
+        <div class="section-head simple-head rank-head">
+          <div>
+            <p class="section-kicker">Song ranking</p>
+            <h2>Bài hát được truy cập nhiều nhất</h2>
+          </div>
+        </div>
+
+        <div class="strip-grid rank-grid" id="rankGrid"></div>
+      </div>
+    </section>
+
+    <section class="section community-section" id="guide">
+      <div class="container">
+        <div class="section-head simple-head">
+          <div>
+            <p class="section-kicker">How it works</p>
+            <h2>Bắt đầu chỉ với 3 bước</h2>
+          </div>
+          <!-- <p class="muted">Luồng sử dụng nhanh cho người mới vào web.</p> -->
+        </div>
+
+        <div class="card-grid">
+          <article class="card simple-card">
+            <div class="card-top">
+              <p class="card-title">1. Tìm bài hát</p>
+              <span class="chip">Search</span>
+            </div>
+            <p class="card-desc">Nhập tên bài hát bạn quan tâm</p>
+          </article>
+
+          <article class="card simple-card">
+            <div class="card-top">
+              <p class="card-title">2. Mở chord page</p>
+              <span class="chip">Practice</span>
+            </div>
+            <p class="card-desc">Bấm vào bài hát để mở trang hợp âm và bắt đầu luyện tập.</p>
+          </article>
+
+          <article class="card simple-card">
+            <div class="card-top">
+              <p class="card-title">3. Tập cùng metronome</p>
+              <span class="chip">Routine</span>
+            </div>
+            <p class="card-desc">Chỉnh tempo phù hợp, tập chậm trước rồi nâng dần theo khả năng.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section community-section" id="posts">
+      <div class="container">
+        <div class="section-head simple-head">
+          <div>
+            <p class="section-kicker" id="short-lessons">Short lessons</p>
+            <h2>Bài viết nổi bật</h2>
+          </div>
+          <!-- <p class="muted">Nội dung ngắn, thực dụng và phù hợp với người học nhạc hiện đại.</p> -->
+        </div>
+
+        <div class="card-grid" id="postsGrid"></div>
+      </div>
+    </section>
+  </main>
+
+  <button id="scrollTopBtn" class="scrollTopBtn" aria-label="Lên đầu trang">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© Copyright by Lufe Audio</p>
+      <div class="footer-links">
+        <a href="https://www.facebook.com/guitaristVN/" aria-label="Facebook">
+          <i class="fa fa1 fa-brands fa-facebook"></i>
+        </a>
+        <a href="https://www.tiktok.com/@jblufe.studio" aria-label="TikTok">
+          <i class="fa fa2 fa-brands fa-tiktok"></i>
+        </a>
+        <a href="https://www.instagram.com/jb_lufe.audio/" aria-label="Instagram">
+          <i class="fa fa3 fa-brands fa-instagram"></i>
+        </a>
+        <a href="https://www.youtube.com/@lufeaudio1526" aria-label="YouTube">
+          <i class="fa fa4 fa-brands fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+  <script src="./JS/utils.js"></script>
+  <script src="./JS/common.js"></script>
+  <script src="/Data/song-list.js"></script>
+  <script src="./JS/community-home.js"></script>
+  <script src="./JS/main.js"></script>
+</body>
+</html>
