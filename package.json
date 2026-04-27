@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate:songs": "node scripts/migrate-song-data.js",
+    "migrate:songs:trusted": "node scripts/migrate-song-data.js --trusted-only",
+    "test:migration:songs": "node scripts/test-song-migration.js"
   },
   "dependencies": {
     "caniuse-lite": "^1.0.30001790",

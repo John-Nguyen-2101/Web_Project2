@@ -1,0 +1,375 @@
+{
+  "summary": {
+    "mode": "trusted_only",
+    "songs_total": 4,
+    "output_songs_total": 1,
+    "trusted_fixtures": 1,
+    "non_production_samples": 3,
+    "songs_valid": 1,
+    "songs_with_warnings": 3,
+    "songs_failed": 0,
+    "trusted_blocking_errors": 0
+  },
+  "notes": [
+    "Non-production sample songs are parsed for tolerance but are not trusted import data.",
+    "Warnings on non-production samples do not block Step 4 refinement.",
+    "Use npm run migrate:songs:trusted to write only trusted import candidates to songs.json and song_versions.json."
+  ],
+  "songs": [
+    {
+      "legacy_id": "50namvesau",
+      "file": "Data\\songs\\song-50namvesau.js",
+      "data_classification": "non_production_sample",
+      "import_eligible": false,
+      "status": "warning",
+      "warnings": [
+        {
+          "code": "repeated_section_label",
+          "message": "Repeated section label \"Verse\" assigned unique id.",
+          "line_number": 21,
+          "source_line": "[Verse]"
+        }
+      ],
+      "errors": [],
+      "stats": {
+        "sections": 3,
+        "bars": 50,
+        "cells": 200,
+        "chords": 50
+      },
+      "output_included": false
+    },
+    {
+      "legacy_id": "Daduroi",
+      "file": "Data\\songs\\song-Daduroi.js",
+      "data_classification": "non_production_sample",
+      "import_eligible": false,
+      "status": "warning",
+      "warnings": [
+        {
+          "code": "legacy_colon_syntax_detected",
+          "message": "Legacy chord colon syntax was converted.",
+          "line_number": 2,
+          "source_line": "C|Cmaj7 : mùa / xuân / đến"
+        },
+        {
+          "code": "legacy_colon_syntax_detected",
+          "message": "Legacy chord colon syntax was converted.",
+          "line_number": 3,
+          "source_line": "G| : hoa / bay / khắp"
+        },
+        {
+          "code": "legacy_colon_syntax_detected",
+          "message": "Legacy chord colon syntax was converted.",
+          "line_number": 4,
+          "source_line": "Am|Am7 : hiên / nhà / nhỏ"
+        },
+        {
+          "code": "legacy_colon_syntax_detected",
+          "message": "Legacy chord colon syntax was converted.",
+          "line_number": 5,
+          "source_line": "Em : nắng / lên / rồi"
+        },
+        {
+          "code": "legacy_colon_syntax_detected",
+          "message": "Legacy chord colon syntax was converted.",
+          "line_number": 8,
+          "source_line": "F : ta / vui / hát"
+        },
+        {
+          "code": "legacy_colon_syntax_detected",
+          "message": "Legacy chord colon syntax was converted.",
+          "line_number": 9,
+          "source_line": "C : trong / đêm / sáng"
+        },
+        {
+          "code": "legacy_colon_syntax_detected",
+          "message": "Legacy chord colon syntax was converted.",
+          "line_number": 10,
+          "source_line": "Dm : tay / nâng / chén"
+        },
+        {
+          "code": "legacy_colon_syntax_detected",
+          "message": "Legacy chord colon syntax was converted.",
+          "line_number": 11,
+          "source_line": "G : xuân / đang / về"
+        }
+      ],
+      "errors": [],
+      "stats": {
+        "sections": 2,
+        "bars": 8,
+        "cells": 32,
+        "chords": 8
+      },
+      "output_included": false
+    },
+    {
+      "legacy_id": "LangRhymastic",
+      "file": "Data\\songs\\song-LangRhymastic.js",
+      "data_classification": "non_production_sample",
+      "import_eligible": false,
+      "status": "warning",
+      "warnings": [
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 2,
+          "source_line": "[Aadd9] x/{Nếu biết }/{trước rằng}/{ x sẽ}"
+        },
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 2,
+          "source_line": "[Aadd9] x/{Nếu biết }/{trước rằng}/{ x sẽ}"
+        },
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 4,
+          "source_line": "[Dsus2]/{Nếu biết }/{trước rằng}/ sẽ"
+        },
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 6,
+          "source_line": "[A9]/Sao /không /{níu lấy }"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 7,
+          "source_line": "[]/{đôi tay}//{ thật lâu?}"
+        },
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 7,
+          "source_line": "[]/{đôi tay}//{ thật lâu?}"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 8,
+          "source_line": "[]///Để"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 9,
+          "source_line": "[] lời /{yêu thương} //{nhạt màu}"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 10,
+          "source_line": "[]/{Nếu biết} /{trước đường} /{đời rẽ}"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 11,
+          "source_line": "[]ngang/{ đôi ta}//"
+        },
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 11,
+          "source_line": "[]ngang/{ đôi ta}//"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 12,
+          "source_line": "[]/{Nếu biết}/ {trước lời}/ {hẹn ước}"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 13,
+          "source_line": "[]sẽ /{trôi xa} //{đi mất}"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 14,
+          "source_line": "[]//{Mây chợt}/ hững"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 15,
+          "source_line": "[]hờ//{ đêm chợt}/bơ"
+        },
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 15,
+          "source_line": "[]hờ//{ đêm chợt}/bơ"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 16,
+          "source_line": "[]vơ///Hoài"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 17,
+          "source_line": "[]niệm /{giấu hết}//{ trong mơ}"
+        },
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 17,
+          "source_line": "[]niệm /{giấu hết}//{ trong mơ}"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 20,
+          "source_line": "[]//{Mùa thu }/đi"
+        },
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 20,
+          "source_line": "[]//{Mùa thu }/đi"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 21,
+          "source_line": "[]Qua //Trầm /{hương gọi}"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 22,
+          "source_line": "[]Bóng/ dáng/ người/ khuất"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 23,
+          "source_line": "[]Xa/Đã/ {lặng tiếng}/ dương"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 24,
+          "source_line": "[]cầm//{Gió mang} /mùa"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 25,
+          "source_line": "[]đông/ {ghé lại}//Để"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 26,
+          "source_line": "[]{cô đơn}/ xé /nát /tim"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 27,
+          "source_line": "[]ai//{Giờ ta} /như"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 28,
+          "source_line": "[]mang//{ trọn sầu} /nhân"
+        },
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 28,
+          "source_line": "[]mang//{ trọn sầu} /nhân"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 29,
+          "source_line": "[]gian//Người/ {nơi sương}"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 30,
+          "source_line": "[]khói/ ân /{tình nay}/ dở"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 31,
+          "source_line": "[]dang/Giấc/{ mơ hoá }/tro"
+        },
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 31,
+          "source_line": "[]dang/Giấc/{ mơ hoá }/tro"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 32,
+          "source_line": "[]tàn//{Chẳng thể }/lướt"
+        },
+        {
+          "code": "braced_lyric_trimmed",
+          "message": "Whitespace inside braced lyric was trimmed.",
+          "line_number": 32,
+          "source_line": "[]tàn//{Chẳng thể }/lướt"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 33,
+          "source_line": "[]thêm /{một phím} /đàn/Để"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 34,
+          "source_line": "[]{hồn ta} //{mãi còn}/ lang"
+        },
+        {
+          "code": "empty_chord_marker",
+          "message": "Empty chord marker parsed as no chord.",
+          "line_number": 35,
+          "source_line": "[]thang///"
+        }
+      ],
+      "errors": [],
+      "stats": {
+        "sections": 2,
+        "bars": 32,
+        "cells": 128,
+        "chords": 5
+      },
+      "output_included": false
+    },
+    {
+      "legacy_id": "Ngayxuanlpxv",
+      "file": "Data\\songs\\song-Ngayxuanlpxv.js",
+      "data_classification": "trusted_fixture",
+      "import_eligible": true,
+      "status": "valid",
+      "warnings": [],
+      "errors": [],
+      "stats": {
+        "sections": 3,
+        "bars": 32,
+        "cells": 128,
+        "chords": 33
+      },
+      "output_included": true
+    }
+  ]
+}
