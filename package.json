@@ -9,7 +9,10 @@
     "lint": "next lint",
     "migrate:songs": "node scripts/migrate-song-data.js",
     "migrate:songs:trusted": "node scripts/migrate-song-data.js --trusted-only",
-    "test:migration:songs": "node scripts/test-song-migration.js"
+    "test:migration:songs": "node scripts/test-song-migration.js",
+    "import:songs": "node scripts/import-songs-to-supabase.js",
+    "import:songs:dry-run": "node scripts/import-songs-to-supabase.js --dry-run",
+    "diagnose:supabase-key": "node scripts/diagnose-supabase-service-role-key.js"
   },
   "dependencies": {
     "caniuse-lite": "^1.0.30001790",
