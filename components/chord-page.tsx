@@ -77,6 +77,16 @@ function getMeterConfig(song: ParsedSong): MeterConfig {
   };
 }
 
+function getLayoutStrongCells(song: ParsedSong) {
+  const layout = song.layout as
+    | (NonNullable<ParsedSong["layout"]> & { strong_cells?: number[] })
+    | undefined;
+
+  return (layout?.strongCells || layout?.strong_cells || []).filter(
+    (cellNumber) => Number.isInteger(cellNumber) && cellNumber > 0,
+  );
+}
+
 function getPlaybackConfig(song: ParsedSong, bpm: number): PlaybackConfig {
   const top = song.timeSigTop;
   const bottom = song.timeSigBottom;
@@ -203,7 +213,7 @@ function chordRoot(chord: string | null | undefined) {
   return match ? `${match[1]}${match[2] || ""}` : null;
 }
 
-function shouldHighlightBeat(song: ParsedSong, beatNumber: number) {
+function shouldHighlightFallbackBeat(song: ParsedSong, beatNumber: number) {
   const top = song.timeSigTop;
   const bottom = song.timeSigBottom;
 
@@ -255,6 +265,8 @@ export function ChordPage({ song }: { song: ParsedSong }) {
 
   const meter = useMemo(() => getMeterConfig(song), [song]);
   const playback = useMemo(() => getPlaybackConfig(song, bpm), [song, bpm]);
+  const resolvedStrongCells = useMemo(() => getLayoutStrongCells(song), [song]);
+  const strongCellSet = useMemo(() => new Set(resolvedStrongCells), [resolvedStrongCells]);
 
   const tokenLineIndexes = useMemo(
     () =>
@@ -678,13 +690,32 @@ export function ChordPage({ song }: { song: ParsedSong }) {
                             tokenIndex > 0 ? line.tokens[tokenIndex - 1]?.beatIndex : null;
                           const isFirstCellOfBeat =
                             tokenIndex === 0 || token.beatIndex !== previousBeat;
+                          const renderedCellIndex = tokenIndex + 1;
+                          const hasLayoutStrongCells = resolvedStrongCells.length > 0;
+                          const isStrongCell = hasLayoutStrongCells
+                            ? strongCellSet.has(renderedCellIndex)
+                            : shouldHighlightFallbackBeat(song, beat);
                           const chordBeatActive =
-                            isPlaying &&
-                            phase !== "countin" &&
-                            lineIndex === activeLine &&
-                            isFirstCellOfBeat &&
-                            token.beatIndex === beat &&
-                            shouldHighlightBeat(song, beat);
+                            hasLayoutStrongCells
+                              ? isPlaying &&
+                                phase !== "countin" &&
+                                lineIndex === activeLine &&
+                                activeStep === tokenIndex &&
+                                isStrongCell
+                              : isPlaying &&
+                                phase !== "countin" &&
+                                lineIndex === activeLine &&
+                                isFirstCellOfBeat &&
+                                token.beatIndex === beat &&
+                                isStrongCell;
+
+                          if (isPlaying && phase !== "countin" && lineIndex === activeLine) {
+                            console.log("[ChordPage strong cell debug]", {
+                              resolvedStrongCells,
+                              renderedCellIndex,
+                              isStrongCell,
+                            });
+                          }
 
                           return (
                             <div

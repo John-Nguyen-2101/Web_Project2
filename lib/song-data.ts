@@ -2,6 +2,8 @@ import { readFile } from "fs/promises";
 import path from "path";
 import vm from "vm";
 
+import { supabaseRead } from "@/lib/supabase-server";
+
 export type SongLineToken = {
   lyric: string;
   chord?: string | null;
@@ -21,6 +23,13 @@ export type SongTokenLine = {
 
 export type ParsedSongLine = SongSectionLine | SongTokenLine;
 
+export type SongLayout = {
+  cellsPerBar?: number;
+  strongCells?: number[];
+  cellLabels?: string[];
+  cellToBeatMap?: number[];
+};
+
 export type ParsedSong = {
   id: string;
   title: string;
@@ -35,11 +44,65 @@ export type ParsedSong = {
   tone?: string;
   scale?: string;
   quickText?: string;
+  layout?: SongLayout;
   lines: ParsedSongLine[];
 };
 
 type RawSong = Omit<ParsedSong, "lines"> & {
   lines?: ParsedSongLine[];
+};
+
+type SupabaseSongRow = {
+  id: string;
+  legacy_song_id: string | null;
+  slug: string | null;
+  title: string | null;
+  author_name: string | null;
+  style: string | null;
+  recommended_tempo_text: string | null;
+  bpm: number | null;
+  time_sig_top: number | null;
+  time_sig_bottom: number | null;
+  meter_mode: string | null;
+  song_key: string | null;
+  scale: string | null;
+  current_version_id: string | null;
+};
+
+type SupabaseSongVersionRow = {
+  id: string;
+  song_id: string;
+  version_number: number | null;
+  content_json: SupabaseSongContent;
+  quick_text_legacy: string | null;
+  is_current: boolean | null;
+};
+
+type SupabaseSongContent = {
+  format?: string;
+  source?: {
+    raw?: string;
+  };
+  layout?: {
+    cells_per_bar?: number;
+    strong_cells?: number[];
+    cell_labels?: string[];
+    cell_to_beat_map?: number[];
+  };
+  sections?: Array<{
+    id?: string;
+    label?: string;
+    bars?: Array<{
+      cells?: Array<{
+        beat_index?: number;
+        lyric?: string;
+        chord?: {
+          basic?: string | null;
+          advanced?: string | null;
+        } | null;
+      }>;
+    }>;
+  }>;
 };
 
 function slugifySection(text: string) {
@@ -68,6 +131,16 @@ function parseChordSpec(chordSpecRaw: string) {
 }
 
 function getBarGridConfig(song: RawSong) {
+  const layoutMap = song.layout?.cellToBeatMap;
+  const layoutCellsPerBar = song.layout?.cellsPerBar || layoutMap?.length;
+
+  if (layoutCellsPerBar && layoutMap?.length) {
+    return {
+      cellsPerBar: layoutCellsPerBar,
+      cellToBeatMap: layoutMap,
+    };
+  }
+
   const top = song?.timeSigTop;
   const bottom = song?.timeSigBottom;
 
@@ -228,7 +301,164 @@ function parseSong(rawSong: RawSong): ParsedSong {
   };
 }
 
-export async function getSongById(songId: string) {
+function linesFromSupabaseContent(content: SupabaseSongContent): ParsedSongLine[] {
+  const lines: ParsedSongLine[] = [];
+
+  for (const section of content.sections || []) {
+    const sectionLabel = section.label || "Section";
+
+    lines.push({
+      section: sectionLabel,
+      id: section.id || slugifySection(sectionLabel),
+    });
+
+    for (const bar of section.bars || []) {
+      lines.push({
+        tokens: (bar.cells || []).map((cell) => ({
+          lyric: cell.lyric || "",
+          chordBasic: cell.chord?.basic || null,
+          chordAdv: cell.chord?.advanced || null,
+          beatIndex: cell.beat_index || 1,
+        })),
+      });
+    }
+  }
+
+  return lines;
+}
+
+function layoutFromSupabaseContent(content: SupabaseSongContent): SongLayout | undefined {
+  const layout = content.layout;
+
+  if (!layout) {
+    return undefined;
+  }
+
+  return {
+    cellsPerBar: layout.cells_per_bar,
+    strongCells: layout.strong_cells,
+    cellLabels: layout.cell_labels,
+    cellToBeatMap: layout.cell_to_beat_map,
+  };
+}
+
+function supabaseRowsToParsedSong(
+  song: SupabaseSongRow,
+  version: SupabaseSongVersionRow,
+): ParsedSong | null {
+  const content = version.content_json;
+
+  if (!content || content.format !== "lufe.song_content.v1") {
+    return null;
+  }
+
+  const lines = linesFromSupabaseContent(content);
+
+  if (!lines.length) {
+    return null;
+  }
+
+  return {
+    id: song.legacy_song_id || song.slug || song.id,
+    title: song.title || "Untitled song",
+    author: song.author_name || "",
+    style: song.style || "",
+    recommendedTempo: song.recommended_tempo_text || "",
+    bpm: song.bpm || 80,
+    timeSigTop: song.time_sig_top || 4,
+    timeSigBottom: song.time_sig_bottom || 4,
+    meterMode: song.meter_mode || undefined,
+    key: song.song_key || undefined,
+    tone: song.song_key || undefined,
+    scale: song.scale || undefined,
+    quickText: version.quick_text_legacy || content.source?.raw || undefined,
+    layout: layoutFromSupabaseContent(content),
+    lines,
+  };
+}
+
+async function getSupabaseSongRow(songId: string) {
+  const commonQuery = {
+    select:
+      "id,legacy_song_id,slug,title,author_name,style,recommended_tempo_text,bpm,time_sig_top,time_sig_bottom,meter_mode,song_key,scale,current_version_id",
+    limit: "1",
+  };
+
+  const byLegacyId = await supabaseRead<SupabaseSongRow[]>("songs", {
+    query: {
+      ...commonQuery,
+      legacy_song_id: `eq.${songId}`,
+    },
+  });
+
+  if (byLegacyId[0]) {
+    return byLegacyId[0];
+  }
+
+  const bySlug = await supabaseRead<SupabaseSongRow[]>("songs", {
+    query: {
+      ...commonQuery,
+      slug: `eq.${songId}`,
+    },
+  });
+
+  return bySlug[0] || null;
+}
+
+async function getSupabaseCurrentVersion(song: SupabaseSongRow) {
+  const commonQuery = {
+    select:
+      "id,song_id,version_number,content_json,quick_text_legacy,is_current",
+    limit: "1",
+  };
+
+  if (song.current_version_id) {
+    const byCurrentId = await supabaseRead<SupabaseSongVersionRow[]>(
+      "song_versions",
+      {
+        query: {
+          ...commonQuery,
+          id: `eq.${song.current_version_id}`,
+        },
+      },
+    );
+
+    if (byCurrentId[0]) {
+      return byCurrentId[0];
+    }
+  }
+
+  const byCurrentFlag = await supabaseRead<SupabaseSongVersionRow[]>(
+    "song_versions",
+    {
+      query: {
+        ...commonQuery,
+        song_id: `eq.${song.id}`,
+        is_current: "eq.true",
+      },
+    },
+  );
+
+  return byCurrentFlag[0] || null;
+}
+
+async function getSongFromSupabase(songId: string) {
+  const song = await getSupabaseSongRow(songId);
+
+  if (!song) {
+    return null;
+  }
+
+  const currentVersion = await getSupabaseCurrentVersion(song);
+
+  if (!currentVersion) {
+    return null;
+  }
+
+  return supabaseRowsToParsedSong(song, currentVersion);
+}
+
+async function getSongFromLocalFile(songId: string) {
   try {
     const filePath = path.join(process.cwd(), "Data", "songs", `song-${songId}.js`);
     const source = await readFile(filePath, "utf8");
@@ -244,4 +474,21 @@ export async function getSongById(songId: string) {
   } catch {
     return null;
   }
+}
+
+export async function getSongById(songId: string) {
+  try {
+    const supabaseSong = await getSongFromSupabase(songId);
+
+    if (supabaseSong) {
+      return supabaseSong;
+    }
+  } catch (error) {
+    console.warn(
+      `Supabase song read failed for ${songId}; falling back to local data.`,
+      error,
+    );
+  }
+
+  return getSongFromLocalFile(songId);
 }
