@@ -14,6 +14,8 @@
     "test:migration:songs": "node scripts/test-song-migration.js",
     "import:songs": "node scripts/import-songs-to-supabase.js",
     "import:songs:dry-run": "node scripts/import-songs-to-supabase.js --dry-run",
+    "import:blog": "node scripts/import-blog-posts-to-supabase.js --import",
+    "import:blog:dry-run": "node scripts/import-blog-posts-to-supabase.js --dry-run",
     "diagnose:supabase-key": "node scripts/diagnose-supabase-service-role-key.js"
   },
   "dependencies": {

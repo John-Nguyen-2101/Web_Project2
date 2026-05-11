@@ -554,6 +554,18 @@ export function ChordPage({ song }: { song: ParsedSong }) {
           <span id="songAuthor" className="metaPill">
             👤 {song.author}
           </span>
+          {song.uploaderProfile ? (
+            <span className="metaPill">
+              Uploaded by{" "}
+              {song.uploaderProfile.username ? (
+                <a href={`/profiles/${encodeURIComponent(song.uploaderProfile.username)}`}>
+                  {song.uploaderProfile.displayName}
+                </a>
+              ) : (
+                song.uploaderProfile.displayName
+              )}
+            </span>
+          ) : null}
           <span id="songStyle" className="metaPill">
             🎼 {song.style}
           </span>

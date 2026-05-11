@@ -2,7 +2,9 @@ import { readFile } from "fs/promises";
 import path from "path";
 import vm from "vm";
 
+import { getProfileById } from "@/lib/profile-data";
 import { supabaseRead } from "@/lib/supabase-server";
+import type { ContentOwnerProfile } from "@/lib/site-shared";
 
 export type SongLineToken = {
   lyric: string;
@@ -45,6 +47,7 @@ export type ParsedSong = {
   scale?: string;
   quickText?: string;
   layout?: SongLayout;
+  uploaderProfile?: ContentOwnerProfile;
   lines: ParsedSongLine[];
 };
 
@@ -67,6 +70,7 @@ type SupabaseSongRow = {
   song_key: string | null;
   scale: string | null;
   current_version_id: string | null;
+  uploaded_by: string | null;
 };
 
 type SupabaseSongVersionRow = {
@@ -345,6 +349,7 @@ function layoutFromSupabaseContent(content: SupabaseSongContent): SongLayout | u
 function supabaseRowsToParsedSong(
   song: SupabaseSongRow,
   version: SupabaseSongVersionRow,
+  uploaderProfile?: ContentOwnerProfile,
 ): ParsedSong | null {
   const content = version.content_json;
 
@@ -373,6 +378,7 @@ function supabaseRowsToParsedSong(
     scale: song.scale || undefined,
     quickText: version.quick_text_legacy || content.source?.raw || undefined,
     layout: layoutFromSupabaseContent(content),
+    uploaderProfile,
     lines,
   };
 }
@@ -380,7 +386,7 @@ function supabaseRowsToParsedSong(
 async function getSupabaseSongRow(songId: string) {
   const commonQuery = {
     select:
-      "id,legacy_song_id,slug,title,author_name,style,recommended_tempo_text,bpm,time_sig_top,time_sig_bottom,meter_mode,song_key,scale,current_version_id",
+      "id,legacy_song_id,slug,title,author_name,style,recommended_tempo_text,bpm,time_sig_top,time_sig_bottom,meter_mode,song_key,scale,current_version_id,uploaded_by",
     limit: "1",
   };
 
@@ -455,7 +461,15 @@ async function getSongFromSupabase(songId: string) {
     return null;
   }
 
-  return supabaseRowsToParsedSong(song, currentVersion);
+  const uploaderProfile = song.uploaded_by
+    ? await getProfileById(song.uploaded_by)
+    : null;
+
+  return supabaseRowsToParsedSong(
+    song,
+    currentVersion,
+    uploaderProfile || undefined,
+  );
 }
 
 async function getSongFromLocalFile(songId: string) {

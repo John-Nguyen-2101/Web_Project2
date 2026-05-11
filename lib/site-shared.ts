@@ -59,6 +59,12 @@ export type BlogPost = {
   tag: string;
   cover?: string;
   content: string;
+  authorProfile?: ContentOwnerProfile;
+};
+
+export type ContentOwnerProfile = {
+  displayName: string;
+  username: string | null;
 };
 
 export type SongListItem = {
