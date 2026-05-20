@@ -31,7 +31,8 @@ function ProfileNotFound() {
   return (
     <main className="wrapper profile-page">
       <div className="container profile-container">
-        <article className="card profile-card">
+        <article className="card profile-card profile-card-empty">
+          <div className="profile-kicker">Public Creator Profile</div>
           <h1>Profile not available</h1>
           <p className="card-desc">
             This profile could not be found, or it is not public yet.
@@ -57,47 +58,57 @@ export default async function PublicProfileRoute({
     <main className="wrapper profile-page">
       <div className="container profile-container">
         <article className="card profile-card">
-          <div className="profile-avatar" aria-hidden="true">
-            {profile.avatarUrl ? (
-              <img src={profile.avatarUrl} alt="" loading="lazy" />
-            ) : (
-              <span>
-                {getFallbackInitial(profile.displayName, profile.username)}
-              </span>
-            )}
-          </div>
+          <div className="profile-banner" aria-hidden="true" />
 
-          <h1>{profile.displayName}</h1>
+          <div className="profile-body">
+            <div className="profile-avatar" aria-hidden="true">
+              {profile.avatarUrl ? (
+                <img src={profile.avatarUrl} alt="" loading="lazy" />
+              ) : (
+                <span>
+                  {getFallbackInitial(profile.displayName, profile.username)}
+                </span>
+              )}
+            </div>
 
-          {profile.username ? (
-            <div className="meta profile-username">@{profile.username}</div>
-          ) : null}
+            <div className="profile-kicker">Public Creator Profile</div>
 
-          {profile.bio ? <p className="card-desc">{profile.bio}</p> : null}
+            <h1>{profile.displayName}</h1>
 
-          <div className="card-actions profile-links">
-            {profile.websiteUrl ? (
-              <a
-                className="link"
-                href={profile.websiteUrl}
-                rel="noreferrer"
-                target="_blank"
-              >
-                Website
-              </a>
+            {profile.username ? (
+              <div className="meta profile-username">@{profile.username}</div>
             ) : null}
 
-            {socialLinks.map((link) => (
-              <a
-                key={link.id}
-                className="link"
-                href={link.url}
-                rel="noreferrer"
-                target="_blank"
-              >
-                {getSocialLabel(link.platform, link.label)}
-              </a>
-            ))}
+            {profile.bio ? <p className="profile-bio">{profile.bio}</p> : null}
+
+            <div className="card-actions profile-links">
+              {profile.websiteUrl ? (
+                <a
+                  className="link profile-link"
+                  href={profile.websiteUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Website
+                </a>
+              ) : null}
+
+              {socialLinks.map((link) => (
+                <a
+                  key={link.id}
+                  className="link profile-link"
+                  href={link.url}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {getSocialLabel(link.platform, link.label)}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="profile-coming-soon">
+            Songs and posts will appear here soon.
           </div>
         </article>
       </div>

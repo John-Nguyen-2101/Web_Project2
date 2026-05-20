@@ -37,7 +37,9 @@ export function HomePage({ posts, songs }: HomePageProps) {
     }
 
     return songs.filter((song) =>
-      normalizeText(`${song.title} ${song.author}`).includes(normalizedQuery),
+      normalizeText(
+        `${song.title} ${song.author} ${song.style || ""} ${song.rhythm || ""}`,
+      ).includes(normalizedQuery),
     );
   }, [query, songs]);
 
@@ -104,6 +106,11 @@ export function HomePage({ posts, songs }: HomePageProps) {
                       href={`/chords/${encodeURIComponent(song.id)}`}
                     >
                       <div className="listItemTitle">{song.title}</div>
+                      <div className="muted small">
+                        {[song.author, song.style, song.timeSig]
+                          .filter(Boolean)
+                          .join(" | ")}
+                      </div>
                     </a>
                   ))
                 ) : (

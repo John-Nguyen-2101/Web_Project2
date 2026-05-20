@@ -71,9 +71,13 @@ export type SongListItem = {
   id: string;
   title: string;
   author: string;
+  style?: string;
+  rhythm?: string;
   bpm: number;
   timeSig: string;
   views: number;
+  createdAt?: string | null;
+  updatedAt?: string | null;
 };
 
 export function extractSlugFromLegacyLink(link?: string) {
