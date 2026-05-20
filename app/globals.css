@@ -20,3 +20,57 @@ body {
   max-width: 720px;
   margin: 48px auto;
 }
+
+.profile-page {
+  display: flex;
+  align-items: center;
+  padding: 56px 0;
+}
+
+.profile-container {
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card {
+  width: min(100%, 560px);
+  text-align: center;
+}
+
+.profile-avatar {
+  width: 112px;
+  height: 112px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #081023;
+  font-size: 42px;
+  font-weight: 900;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-card h1 {
+  margin: 0;
+}
+
+.profile-username {
+  margin-top: 6px;
+  color: var(--muted);
+}
+
+.profile-card .card-desc {
+  margin-top: 18px;
+}
+
+.profile-links {
+  justify-content: center;
+  margin-top: 18px;
+}

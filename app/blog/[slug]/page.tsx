@@ -38,7 +38,7 @@ export default async function BlogPostRoute({ params }: BlogPageProps) {
             <div className="meta">
               Author:{" "}
               {post.authorProfile.username ? (
-                <a href={`/profiles/${encodeURIComponent(post.authorProfile.username)}`}>
+                <a href={`/profile/${encodeURIComponent(post.authorProfile.username)}`}>
                   {post.authorProfile.displayName}
                 </a>
               ) : (
