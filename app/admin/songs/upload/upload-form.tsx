@@ -10,6 +10,7 @@ const initialClientSongUploadState: SongUploadActionState = {
     title: "",
     authorName: "",
     style: "",
+    tone: "",
     rhythm: "",
     timeSigTop: 4,
     timeSigBottom: 4,
@@ -153,6 +154,15 @@ export function SongUploadForm() {
           <label>
             <span>Style</span>
             <input name="style" defaultValue={values.style} />
+          </label>
+
+          <label>
+            <span>Tone</span>
+            <input
+              name="tone"
+              placeholder="C, Dm, F#, Bb..."
+              defaultValue={values.tone}
+            />
           </label>
 
           <label>

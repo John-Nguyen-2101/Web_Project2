@@ -87,6 +87,14 @@ type SupabaseSongContent = {
   source?: {
     raw?: string;
   };
+  meter?: {
+    cells_per_bar?: number;
+    strong_cells?: number[];
+    cell_labels?: string[];
+    cell_to_beat_map?: number[];
+    beat_map?: number[];
+    count_labels?: string[];
+  };
   layout?: {
     cells_per_bar?: number;
     strong_cells?: number[];
@@ -332,7 +340,16 @@ function linesFromSupabaseContent(content: SupabaseSongContent): ParsedSongLine[
 }
 
 function layoutFromSupabaseContent(content: SupabaseSongContent): SongLayout | undefined {
-  const layout = content.layout;
+  if (content.layout) {
+    return {
+      cellsPerBar: content.layout.cells_per_bar,
+      strongCells: content.layout.strong_cells,
+      cellLabels: content.layout.cell_labels,
+      cellToBeatMap: content.layout.cell_to_beat_map,
+    };
+  }
+
+  const layout = content.meter;
 
   if (!layout) {
     return undefined;
@@ -341,8 +358,8 @@ function layoutFromSupabaseContent(content: SupabaseSongContent): SongLayout | u
   return {
     cellsPerBar: layout.cells_per_bar,
     strongCells: layout.strong_cells,
-    cellLabels: layout.cell_labels,
-    cellToBeatMap: layout.cell_to_beat_map,
+    cellLabels: layout.cell_labels || layout.count_labels,
+    cellToBeatMap: layout.cell_to_beat_map || layout.beat_map,
   };
 }
 

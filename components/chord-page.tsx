@@ -87,9 +87,51 @@ function getLayoutStrongCells(song: ParsedSong) {
   );
 }
 
+function getLayoutCellToBeatMap(song: ParsedSong) {
+  return (song.layout?.cellToBeatMap || []).filter(
+    (beatNumber) => Number.isInteger(beatNumber) && beatNumber > 0,
+  );
+}
+
+function getLayoutCellLabels(song: ParsedSong) {
+  return (song.layout?.cellLabels || []).filter(Boolean);
+}
+
+function getFallbackStrongCells(song: ParsedSong) {
+  const top = song.timeSigTop;
+  const bottom = song.timeSigBottom;
+
+  if (top === 2 && bottom === 4) return [1, 3];
+  if (top === 3 && bottom === 4) return [1];
+  if (top === 4 && bottom === 4) return [1, 3];
+  if (top === 6 && bottom === 8) return [1, 4];
+
+  return [1];
+}
+
 function getPlaybackConfig(song: ParsedSong, bpm: number): PlaybackConfig {
   const top = song.timeSigTop;
   const bottom = song.timeSigBottom;
+  const layoutCellToBeatMap = getLayoutCellToBeatMap(song);
+  const layoutCellsPerBar = song.layout?.cellsPerBar || layoutCellToBeatMap.length;
+  const layoutCellLabels = getLayoutCellLabels(song);
+  const strongCells = getLayoutStrongCells(song);
+
+  if (layoutCellsPerBar && layoutCellToBeatMap.length) {
+    return {
+      stepsPerBar: layoutCellsPerBar,
+      stepToBeatMap: layoutCellToBeatMap,
+      labelForStep: (index) =>
+        top === 6 && bottom === 8
+          ? String(index + 1)
+          : layoutCellLabels[index] || String(index + 1),
+      kindForStep: (index) =>
+        (strongCells.length ? strongCells : getFallbackStrongCells(song)).includes(index + 1)
+          ? "strong"
+          : "normal",
+      msPerStep: bottom === 8 ? (60000 / bpm) / 2 : 60000 / bpm,
+    };
+  }
 
   if (top === 2 && bottom === 4) {
     return {
@@ -98,7 +140,7 @@ function getPlaybackConfig(song: ParsedSong, bpm: number): PlaybackConfig {
       labelForStep: (index) => ["1", "&", "2", "&"][index] || "",
       kindForStep: (index) => {
         if (index === 0) return "strong";
-        if (index === 2) return "weak";
+        if (index === 2) return "strong";
         return "normal";
       },
       msPerStep: (60000 / bpm) / 2,
@@ -120,7 +162,7 @@ function getPlaybackConfig(song: ParsedSong, bpm: number): PlaybackConfig {
       stepsPerBar: 4,
       stepToBeatMap: [1, 2, 3, 4],
       labelForStep: (index) => String(index + 1),
-      kindForStep: (index) => (index === 0 ? "strong" : "normal"),
+      kindForStep: (index) => (index === 0 || index === 2 ? "strong" : "normal"),
       msPerStep: 60000 / bpm,
     };
   }
@@ -213,24 +255,26 @@ function chordRoot(chord: string | null | undefined) {
   return match ? `${match[1]}${match[2] || ""}` : null;
 }
 
-function shouldHighlightFallbackBeat(song: ParsedSong, beatNumber: number) {
-  const top = song.timeSigTop;
-  const bottom = song.timeSigBottom;
-
-  if (top === 2 && bottom === 4) return beatNumber === 1 || beatNumber === 2;
-  if (top === 3 && bottom === 4) return beatNumber === 1;
-  if (top === 4 && bottom === 4) return beatNumber === 1 || beatNumber === 3;
-  if (top === 6 && bottom === 8) return beatNumber === 1 || beatNumber === 2;
-
-  return beatNumber === 1;
-}
-
 function getCountInDisplay(playback: PlaybackConfig, stepIndex: number) {
   const beatNumber = playback.stepToBeatMap[stepIndex] ?? 1;
   const previousBeat = stepIndex > 0 ? playback.stepToBeatMap[stepIndex - 1] : null;
   const isFirstStepOfBeat = stepIndex === 0 || beatNumber !== previousBeat;
 
   return isFirstStepOfBeat ? String(beatNumber) : "";
+}
+
+function getHighlightedBeatNumbers(tokens: SongLineToken[], strongCells: number[]) {
+  const highlightedBeats = new Set<number>();
+
+  for (const cellNumber of strongCells) {
+    const beatNumber = tokens[cellNumber - 1]?.beatIndex;
+
+    if (Number.isInteger(beatNumber) && beatNumber > 0) {
+      highlightedBeats.add(beatNumber);
+    }
+  }
+
+  return highlightedBeats;
 }
 
 export function ChordPage({ song }: { song: ParsedSong }) {
@@ -249,6 +293,7 @@ export function ChordPage({ song }: { song: ParsedSong }) {
   const phaseRef = useRef<"idle" | "countin" | "countin-end" | "play">("idle");
   const activeStepRef = useRef(0);
   const posRef = useRef(0);
+  const pendingLineAdvanceRef = useRef(false);
   const lastScrolledLineRef = useRef(-1);
   const songRootRef = useRef<HTMLDivElement | null>(null);
 
@@ -265,8 +310,10 @@ export function ChordPage({ song }: { song: ParsedSong }) {
 
   const meter = useMemo(() => getMeterConfig(song), [song]);
   const playback = useMemo(() => getPlaybackConfig(song, bpm), [song, bpm]);
-  const resolvedStrongCells = useMemo(() => getLayoutStrongCells(song), [song]);
-  const strongCellSet = useMemo(() => new Set(resolvedStrongCells), [resolvedStrongCells]);
+  const resolvedStrongCells = useMemo(() => {
+    const layoutStrongCells = getLayoutStrongCells(song);
+    return layoutStrongCells.length ? layoutStrongCells : getFallbackStrongCells(song);
+  }, [song]);
 
   const tokenLineIndexes = useMemo(
     () =>
@@ -328,6 +375,7 @@ export function ChordPage({ song }: { song: ParsedSong }) {
     setPhase("idle");
     phaseRef.current = "idle";
     posRef.current = 0;
+    pendingLineAdvanceRef.current = false;
     activeStepRef.current = 0;
     setActiveStep(0);
     setBeat(1);
@@ -358,11 +406,27 @@ export function ChordPage({ song }: { song: ParsedSong }) {
     autoScrollToActiveLine(activeLine);
   }, [activeLine, isPlaying]);
 
+  useEffect(() => {
+    if (!isPlaying || phase !== "play") {
+      return;
+    }
+
+    console.debug("[ChordPage rhythm debug]", {
+      time_signature: `${song.timeSigTop}/${song.timeSigBottom}`,
+      currentBeat: beat,
+      currentStep: activeStep,
+      cell_to_beat_map: playback.stepToBeatMap,
+      strong_cells: resolvedStrongCells,
+    });
+  }, [activeStep, beat, isPlaying, phase, playback.stepToBeatMap, resolvedStrongCells, song.timeSigBottom, song.timeSigTop]);
+
   const tick = () => {
     const currentStep = activeStepRef.current;
     const currentBeat = playback.stepToBeatMap[currentStep] ?? 1;
     setBeat(currentBeat);
 
+    // Ported from legacy JS/app.js tick(): count-in hands off by
+    // resetting to step 0, rendering that playable cell, then advancing.
     if (phaseRef.current === "countin") {
       playClick(playback.kindForStep(currentStep));
       setActiveStep(currentStep);
@@ -387,6 +451,7 @@ export function ChordPage({ song }: { song: ParsedSong }) {
       setActiveStep(0);
       setBeat(playback.stepToBeatMap[0] ?? 1);
       posRef.current = 0;
+      pendingLineAdvanceRef.current = false;
       setActiveLine(initialLine);
       playClick(playback.kindForStep(0));
       activeStepRef.current = 1 % playback.stepsPerBar;
@@ -394,6 +459,12 @@ export function ChordPage({ song }: { song: ParsedSong }) {
     }
 
     if (phaseRef.current === "play") {
+      if (pendingLineAdvanceRef.current) {
+        pendingLineAdvanceRef.current = false;
+        posRef.current += 1;
+        setActiveLine(tokenLineIndexes[posRef.current] ?? initialLine);
+      }
+
       playClick(playback.kindForStep(currentStep));
       setActiveStep(currentStep);
       setCountIn(null);
@@ -406,12 +477,10 @@ export function ChordPage({ song }: { song: ParsedSong }) {
           return;
         }
 
-        posRef.current += 1;
-        setActiveLine(tokenLineIndexes[posRef.current] ?? initialLine);
+        pendingLineAdvanceRef.current = true;
       }
 
       activeStepRef.current = (currentStep + 1) % playback.stepsPerBar;
-      setBeat(playback.stepToBeatMap[activeStepRef.current] ?? 1);
     }
   };
 
@@ -426,6 +495,7 @@ export function ChordPage({ song }: { song: ParsedSong }) {
     setPhase("countin");
     phaseRef.current = "countin";
     posRef.current = 0;
+    pendingLineAdvanceRef.current = false;
     activeStepRef.current = 0;
     lastScrolledLineRef.current = -1;
     setActiveStep(0);
@@ -558,7 +628,7 @@ export function ChordPage({ song }: { song: ParsedSong }) {
             <span className="metaPill">
               Uploaded by{" "}
               {song.uploaderProfile.username ? (
-                <a href={`/profiles/${encodeURIComponent(song.uploaderProfile.username)}`}>
+                <a href={`/profile/${encodeURIComponent(song.uploaderProfile.username)}`}>
                   {song.uploaderProfile.displayName}
                 </a>
               ) : (
@@ -702,32 +772,19 @@ export function ChordPage({ song }: { song: ParsedSong }) {
                             tokenIndex > 0 ? line.tokens[tokenIndex - 1]?.beatIndex : null;
                           const isFirstCellOfBeat =
                             tokenIndex === 0 || token.beatIndex !== previousBeat;
-                          const renderedCellIndex = tokenIndex + 1;
-                          const hasLayoutStrongCells = resolvedStrongCells.length > 0;
-                          const isStrongCell = hasLayoutStrongCells
-                            ? strongCellSet.has(renderedCellIndex)
-                            : shouldHighlightFallbackBeat(song, beat);
+                          const highlightedBeats = getHighlightedBeatNumbers(
+                            line.tokens,
+                            resolvedStrongCells,
+                          );
+                          // Ported from legacy JS/app.js makeLineGridNode(): highlight
+                          // the first visual cell for the currently ticking beat.
                           const chordBeatActive =
-                            hasLayoutStrongCells
-                              ? isPlaying &&
-                                phase !== "countin" &&
-                                lineIndex === activeLine &&
-                                activeStep === tokenIndex &&
-                                isStrongCell
-                              : isPlaying &&
-                                phase !== "countin" &&
-                                lineIndex === activeLine &&
-                                isFirstCellOfBeat &&
-                                token.beatIndex === beat &&
-                                isStrongCell;
-
-                          if (isPlaying && phase !== "countin" && lineIndex === activeLine) {
-                            console.log("[ChordPage strong cell debug]", {
-                              resolvedStrongCells,
-                              renderedCellIndex,
-                              isStrongCell,
-                            });
-                          }
+                            isPlaying &&
+                            phase === "play" &&
+                            lineIndex === activeLine &&
+                            isFirstCellOfBeat &&
+                            token.beatIndex === beat &&
+                            highlightedBeats.has(beat);
 
                           return (
                             <div

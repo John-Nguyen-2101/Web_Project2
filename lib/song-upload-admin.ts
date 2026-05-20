@@ -4,6 +4,7 @@ export type SongUploadValues = {
   title: string;
   authorName: string;
   style: string;
+  tone: string;
   rhythm: string;
   timeSigTop: number;
   timeSigBottom: number;
@@ -36,6 +37,7 @@ export type SongUploadContent = {
     beat_map: number[];
     beat_groups: number[];
     count_labels: string[];
+    strong_cells: number[];
   };
   sections: Array<{
     id: string;
@@ -78,6 +80,7 @@ type SupabaseSongRow = {
   legacy_song_id: string;
   slug: string;
   title: string;
+  profile_id: string | null;
 };
 
 type SupabaseSongVersionRow = {
@@ -85,6 +88,12 @@ type SupabaseSongVersionRow = {
   song_id: string;
   version_number: number;
   is_current: boolean;
+};
+
+type SupabaseAdminProfileRow = {
+  id: string;
+  username: string | null;
+  is_public: boolean | null;
 };
 
 function slugify(value: string, fallback = "song") {
@@ -120,6 +129,7 @@ function getMeterConfig(values: SongUploadValues) {
       beatGroups: number[];
       beatMap: number[];
       countLabels: string[];
+      strongCells: number[];
     }
   > = {
     "2/4": {
@@ -127,24 +137,28 @@ function getMeterConfig(values: SongUploadValues) {
       beatGroups: [2, 2],
       beatMap: [1, 1, 2, 2],
       countLabels: ["1", "&", "2", "&"],
+      strongCells: [1, 3],
     },
     "3/4": {
       cellsPerBar: 3,
       beatGroups: [1, 1, 1],
       beatMap: [1, 2, 3],
       countLabels: ["1", "2", "3"],
+      strongCells: [1],
     },
     "4/4": {
       cellsPerBar: 4,
       beatGroups: [1, 1, 1, 1],
       beatMap: [1, 2, 3, 4],
       countLabels: ["1", "2", "3", "4"],
+      strongCells: [1, 3],
     },
     "6/8": {
       cellsPerBar: 6,
       beatGroups: [3, 3],
-      beatMap: [1, 1, 1, 2, 2, 2],
-      countLabels: ["1", "tri", "let", "2", "tri", "let"],
+      beatMap: [1, 2, 3, 4, 5, 6],
+      countLabels: ["1", "2", "3", "4", "5", "6"],
+      strongCells: [1, 4],
     },
   };
 
@@ -154,6 +168,7 @@ function getMeterConfig(values: SongUploadValues) {
     beatGroups: Array.from({ length: top }, () => 1),
     beatMap: Array.from({ length: top }, (_, index) => index + 1),
     countLabels: Array.from({ length: top }, (_, index) => String(index + 1)),
+    strongCells: [1],
   };
   const config = preset || fallback;
   const cellUnit =
@@ -390,6 +405,7 @@ export function parseQuickTextForUpload(
       beat_map: meter.beatMap,
       beat_groups: meter.beatGroups,
       count_labels: meter.countLabels,
+      strong_cells: meter.strongCells,
     },
     sections,
   };
@@ -487,6 +503,29 @@ async function supabaseAdminRequest<T>(
   return data as T;
 }
 
+async function getDefaultUploadOwnerProfileId() {
+  const rows = await supabaseAdminRequest<SupabaseAdminProfileRow[]>(
+    "profiles",
+    {
+      query: {
+        select: "id,username,is_public",
+        username: "eq.lufe",
+        is_public: "eq.true",
+        limit: "1",
+      },
+    },
+  );
+  const profile = rows[0];
+
+  if (!profile?.id) {
+    throw new Error(
+      "Default upload owner profile not found: public profile username 'lufe' is required before saving songs.",
+    );
+  }
+
+  return profile.id;
+}
+
 export async function saveUploadedSong(values: SongUploadValues) {
   const preview = parseQuickTextForUpload(values);
 
@@ -495,6 +534,7 @@ export async function saveUploadedSong(values: SongUploadValues) {
   }
 
   const config = getSupabaseAdminConfig();
+  const ownerProfileId = await getDefaultUploadOwnerProfileId();
   const now = new Date().toISOString();
   const legacySongId =
     values.legacySongId.trim() ||
@@ -511,12 +551,14 @@ export async function saveUploadedSong(values: SongUploadValues) {
         title: values.title.trim(),
         author_name: values.authorName.trim(),
         style: values.style.trim() || null,
+        song_key: values.tone.trim() || null,
         recommended_tempo_text: values.rhythm.trim() || null,
         bpm: null,
         time_sig_top: values.timeSigTop,
         time_sig_bottom: values.timeSigBottom,
         meter_mode: values.rhythm.trim() || null,
         uploaded_by: config.importUserId,
+        profile_id: ownerProfileId,
         status: "published",
         visibility: "public",
         current_version_id: null,
@@ -590,6 +632,7 @@ export function valuesFromFormData(formData: FormData): SongUploadValues {
     title: String(formData.get("title") || ""),
     authorName: String(formData.get("authorName") || ""),
     style: String(formData.get("style") || ""),
+    tone: String(formData.get("tone") || ""),
     rhythm: String(formData.get("rhythm") || ""),
     timeSigTop: Number(topRaw) || 4,
     timeSigBottom: Number(bottomRaw) || 4,

@@ -22,6 +22,17 @@ export type ProfileSocialLink = {
   isVisible: boolean;
 };
 
+export type ProfileSong = {
+  id: string;
+  profileId: string;
+  title: string;
+  authorName: string;
+  style: string | null;
+  rhythm: string | null;
+  timeSignature: string;
+  linkId: string;
+};
+
 type SupabaseProfileRow = {
   id: string;
   username: string | null;
@@ -40,6 +51,20 @@ type SupabaseProfileSocialLinkRow = {
   url: string | null;
   sort_order: number | null;
   is_visible: boolean | null;
+};
+
+type SupabaseProfileSongRow = {
+  id: string;
+  profile_id: string | null;
+  legacy_song_id: string | null;
+  slug: string | null;
+  title: string | null;
+  author_name: string | null;
+  style: string | null;
+  recommended_tempo_text: string | null;
+  time_sig_top: number | null;
+  time_sig_bottom: number | null;
+  meter_mode: string | null;
 };
 
 function toProfile(row: SupabaseProfileRow): PublicProfile {
@@ -63,6 +88,22 @@ function toSocialLink(row: SupabaseProfileSocialLinkRow): ProfileSocialLink {
     url: row.url || "",
     sortOrder: row.sort_order || 0,
     isVisible: row.is_visible === true,
+  };
+}
+
+function toProfileSong(row: SupabaseProfileSongRow): ProfileSong {
+  const top = row.time_sig_top || 4;
+  const bottom = row.time_sig_bottom || 4;
+
+  return {
+    id: row.id,
+    profileId: row.profile_id || "",
+    title: row.title || "Untitled song",
+    authorName: row.author_name || "",
+    style: row.style || null,
+    rhythm: row.meter_mode || row.recommended_tempo_text || null,
+    timeSignature: `${top}/${bottom}`,
+    linkId: row.slug || row.legacy_song_id || row.id,
   };
 }
 
@@ -129,6 +170,30 @@ export async function getProfileSocialLinks(profileId: string) {
     return rows.filter((row) => row.url).map(toSocialLink);
   } catch (error) {
     console.warn("Supabase profile social links read failed.", error);
+    return [];
+  }
+}
+
+export async function getProfileSongs(profileId: string) {
+  if (!profileId) {
+    return [];
+  }
+
+  try {
+    const rows = await supabaseRead<SupabaseProfileSongRow[]>("songs", {
+      query: {
+        select:
+          "id,profile_id,legacy_song_id,slug,title,author_name,style,recommended_tempo_text,time_sig_top,time_sig_bottom,meter_mode",
+        profile_id: `eq.${profileId}`,
+        status: "eq.published",
+        visibility: "eq.public",
+        order: "title.asc",
+      },
+    });
+
+    return rows.map(toProfileSong);
+  } catch (error) {
+    console.warn("Supabase profile songs read failed.", error);
     return [];
   }
 }

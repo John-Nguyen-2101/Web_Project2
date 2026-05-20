@@ -1,7 +1,9 @@
 import {
+  getProfileSongs,
   getProfileSocialLinks,
   getPublicProfileByUsername,
 } from "@/lib/profile-data";
+import type { ProfileSong } from "@/lib/profile-data";
 
 type ProfilePageProps = {
   params: Promise<{
@@ -43,12 +45,65 @@ function ProfileNotFound() {
   );
 }
 
+function ProfileSongsSection({
+  displayName,
+  songs,
+}: {
+  displayName: string;
+  songs: ProfileSong[];
+}) {
+  return (
+    <section className="card profile-songs-card">
+      <div className="profile-songs-head">
+        <div>
+          <p className="profile-section-kicker">Songs</p>
+          <h2>Songs by {displayName}</h2>
+        </div>
+        <span className="chip">
+          {songs.length} {songs.length === 1 ? "song" : "songs"}
+        </span>
+      </div>
+
+      {songs.length ? (
+        <div className="profile-song-list">
+          {songs.map((song) => (
+            <a
+              key={song.id}
+              className="profile-song-item"
+              href={`/chords/${encodeURIComponent(song.linkId)}`}
+            >
+              <div>
+                <h3>{song.title}</h3>
+                <p>
+                  {[song.authorName, song.style, song.rhythm, song.timeSignature]
+                    .filter(Boolean)
+                    .join(" | ")}
+                </p>
+              </div>
+              <span>Open chords</span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p className="profile-empty">
+          Public songs from this creator will appear here soon.
+        </p>
+      )}
+    </section>
+  );
+}
+
 export default async function PublicProfileRoute({
   params,
 }: ProfilePageProps) {
   const { username } = await params;
   const profile = await getPublicProfileByUsername(username);
-  const socialLinks = profile ? await getProfileSocialLinks(profile.id) : [];
+  const [socialLinks, songs] = profile
+    ? await Promise.all([
+        getProfileSocialLinks(profile.id),
+        getProfileSongs(profile.id),
+      ])
+    : [[], []];
 
   if (!profile) {
     return <ProfileNotFound />;
@@ -107,10 +162,9 @@ export default async function PublicProfileRoute({
             </div>
           </div>
 
-          <div className="profile-coming-soon">
-            Songs and posts will appear here soon.
-          </div>
         </article>
+
+        <ProfileSongsSection displayName={profile.displayName} songs={songs} />
       </div>
     </main>
   );

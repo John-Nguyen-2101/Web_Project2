@@ -47,32 +47,39 @@ export async function supabaseRead<T>(
 ) {
   const config = getSupabaseServerReadConfig();
   const url = new URL(`${config.url}/rest/v1/${pathname}`);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
 
   for (const [key, value] of Object.entries(options.query || {})) {
     url.searchParams.set(key, value);
   }
 
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      apikey: config.anonKey,
-      Authorization: `Bearer ${config.anonKey}`,
-      Accept: "application/json",
-    },
-    cache: "no-store",
-  });
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        apikey: config.anonKey,
+        Authorization: `Bearer ${config.anonKey}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+      signal: controller.signal,
+    });
 
-  const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : null;
 
-  if (!response.ok) {
-    const message =
-      data && typeof data === "object" && "message" in data
-        ? String(data.message)
-        : text || response.statusText;
+    if (!response.ok) {
+      const message =
+        data && typeof data === "object" && "message" in data
+          ? String(data.message)
+          : text || response.statusText;
 
-    throw new Error(`Supabase read failed: ${message}`);
+      throw new Error(`Supabase read failed: ${message}`);
+    }
+
+    return data as T;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  return data as T;
 }
